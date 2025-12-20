@@ -8,8 +8,9 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8  # 8 days
     
-    SQLALCHEMY_DATABASE_URL: str = "sqlite:///./sql_app.db"
-    STORAGE_PATH: str = "./storage"
+    SQLALCHEMY_DATABASE_URL: str = "sqlite:///./data/sql_app.db"
+    # change storage path to ./charts as requested
+    STORAGE_PATH: str = "./charts"
 
     class Config:
         case_sensitive = True

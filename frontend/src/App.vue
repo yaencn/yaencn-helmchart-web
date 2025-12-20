@@ -5,9 +5,13 @@
         <div class="flex items-center">
           <h1 class="text-xl font-bold text-blue-600">Yaencn HelmChart</h1>
         </div>
-        <nav class="flex space-x-4">
+        <nav class="flex space-x-4 items-center">
           <router-link to="/" class="text-gray-600 hover:text-blue-600">首页</router-link>
-          <router-link to="/admin" class="text-gray-600 hover:text-blue-600">管理后台</router-link>
+          <router-link v-if="!authStore.isAuthenticated" to="/login" class="text-gray-600 hover:text-blue-600">登录</router-link>
+          <template v-else>
+            <router-link to="/admin" class="text-gray-600 hover:text-blue-600">管理后台</router-link>
+            <el-button link @click="handleLogout" class="text-gray-600 hover:text-blue-600">退出</el-button>
+          </template>
         </nav>
       </div>
     </header>
@@ -25,4 +29,14 @@
 </template>
 
 <script setup lang="ts">
+import { useAuthStore } from './store/auth'
+import { useRouter } from 'vue-router'
+
+const authStore = useAuthStore()
+const router = useRouter()
+
+const handleLogout = () => {
+  authStore.logout()
+  router.push('/')
+}
 </script>

@@ -45,11 +45,13 @@ class HelmManager:
 
                 name = metadata.get("name")
                 version = metadata.get("version")
-                
+                # use file modification time as created timestamp so newer uploads sort correctly
+                created_ts = datetime.utcfromtimestamp(os.path.getmtime(full_path)).isoformat() + "Z"
+
                 entry = {
                     "apiVersion": metadata.get("apiVersion", "v2"),
                     "appVersion": metadata.get("appVersion", ""),
-                    "created": datetime.utcnow().isoformat() + "Z",
+                    "created": created_ts,
                     "description": metadata.get("description", ""),
                     "digest": self.calculate_digest(full_path),
                     "name": name,
@@ -65,6 +67,25 @@ class HelmManager:
                 if name not in entries:
                     entries[name] = []
                 entries[name].append(entry)
+
+        # Sort versions for each chart so newest appears first.
+        # Prefer semantic version comparison if packaging is available; otherwise sort by created timestamp.
+        try:
+            from packaging.version import Version, InvalidVersion  # type: ignore
+
+            def sort_key(e):
+                try:
+                    return Version(e.get('version', '0'))
+                except Exception:
+                    # fallback to created timestamp string
+                    return e.get('created', '')
+
+        except Exception:
+            def sort_key(e):
+                return e.get('created', '')
+
+        for name in entries:
+            entries[name].sort(key=sort_key, reverse=True)
 
         index = {
             "apiVersion": "v1",

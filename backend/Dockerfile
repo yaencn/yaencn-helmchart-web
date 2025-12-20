@@ -1,11 +1,26 @@
-FROM python:3.10-slim
+FROM python:3.11-slim
+
+ENV PYTHONUNBUFFERED=1
+ENV POETRY_VIRTUALENVS_CREATE=false
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+	build-essential \
+	gcc \
+	libpq-dev \
+ && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Install runtime dependencies
+COPY requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
-COPY . .
+# Copy application
+COPY . /app
+
+# Ensure charts storage directory exists and is writable
+ENV STORAGE_PATH=/app/charts
+RUN mkdir -p ${STORAGE_PATH} && chown -R root:root ${STORAGE_PATH}
 
 EXPOSE 8000
 

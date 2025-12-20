@@ -2,26 +2,50 @@ version: '3.8'
 
 services:
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+    image: yaencn/backend:latest
+    ports:
+      - "8000:8000"
     volumes:
-      - ./backend/storage:/app/storage
+      - ./backend/charts:/app/charts
       - ./backend/sql_app.db:/app/sql_app.db
     environment:
-      - SECRET_KEY=your-secret-key-here
-    restart: always
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-here}
+      - STORAGE_PATH=/app/charts
+      - SQLALCHEMY_DATABASE_URL=${SQLALCHEMY_DATABASE_URL:-sqlite:////app/sql_app.db}
+      - INITIAL_ADMIN_USER=${INITIAL_ADMIN_USER:-admin}
+      - INITIAL_ADMIN_PASS=${INITIAL_ADMIN_PASS:-admin123}
+    restart: unless-stopped
 
   frontend:
-    build: ./frontend
-    restart: always
-
-  nginx:
-    image: nginx:alpine
+    build:
+      context: ./frontend
+      args:
+        VITE_BACKEND_URL: ${VITE_BACKEND_URL:-http://localhost:8000}
+        VITE_CHARTS_BASE: ${VITE_CHARTS_BASE:-/charts}
+      target: production-stage
+    image: yaencn/frontend:latest
     ports:
       - "80:80"
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - ./backend/storage:/app/storage
     depends_on:
       - backend
-      - frontend
-    restart: always
+    restart: unless-stopped
+
+# Optional nginx service: if you prefer to use a dedicated nginx container with custom proxy rules,
+# uncomment and configure the section below and remove the `ports` mapping from `frontend`.
+#
+#  nginx:
+#    image: nginx:alpine
+#    ports:
+#      - "80:80"
+#    volumes:
+#      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+#    depends_on:
+#      - backend
+#      - frontend
+#    restart: unless-stopped
+
+volumes:
+  charts:
+  db:

@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+backend/.venv/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+pip-wheel-metadata/
+
+# Byte-compiled / optimized / DLL files
+*.pyc
+*.pyo
+*.pyd
+
+# SQLite DB
+/backend/sql_app.db
+
+# Charts storage (runtime uploaded tgz and generated index)
+index.yaml
+
+# Logs
+logs/
+*.log
+
+# Frontend
+node_modules/
+/frontend/node_modules/
+/frontend/dist/
+/.env
+/frontend/.env
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*~
+
+# macOS
+.DS_Store
+
+# Test and coverage
+.pytest_cache/
+.coverage
+coverage.xml
+
+# Mypy, ruff etc
+.mypy_cache/
+.ruff_cache/
+
+# Package artifacts
+*.tgz
+
+# Docker
+docker-compose.override.yml
+
+# Misc
+Thumbs.db
