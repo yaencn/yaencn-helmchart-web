@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    volumes:
+      - ./backend/storage:/app/storage
+      - ./backend/sql_app.db:/app/sql_app.db
+    environment:
+      - SECRET_KEY=your-secret-key-here
+    restart: always
+
+  frontend:
+    build: ./frontend
+    restart: always
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./backend/storage:/app/storage
+    depends_on:
+      - backend
+      - frontend
+    restart: always
