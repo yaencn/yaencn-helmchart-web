@@ -1,11 +1,11 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import Home from '../views/Home.vue'
 import { useAuthStore } from '../store/auth'
 import { CHARTS_BASE } from '../config'
 
 const router = createRouter({
   history: createWebHistory(),
-  routes: [
+  routes: ( [
     {
       path: '/',
       name: 'home',
@@ -31,7 +31,7 @@ const router = createRouter({
         window.location.href = CHARTS_BASE
       }
     }
-  ]
+  ] as RouteRecordRaw[] )
 })
 
 router.beforeEach((to, from, next) => {

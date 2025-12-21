@@ -1,0 +1,60 @@
+name: Backend Build and push to GitHub Container Registry
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  # HARBOR_REG_URL: 'harbor.k8k8kk88.win'
+  # HARBOR_PROJECT_NAME: backend
+  IMAGE_NAME: helmchart-backend
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      # 设置时间格式 (yyyyMMddHHmmss)
+      - name: Set formatted timestamp (Shanghai Time)
+        id: timestamp
+        run: |
+          echo "TIMESTAMP=$(TZ=Asia/Shanghai date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+
+      # Log into GitHub Container Registry
+      - name: Log into GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # - name: Log into Private Container Registry
+      #   uses: docker/login-action@v2
+      #   with:
+      #     registry: harbor.k8k8kk88.win
+      #     username: ${{ secrets.HARBOR_USERNAME }}
+      #     password: ${{ secrets.HARBOR_PASSWORD }}
+
+      # - name: Build and push Docker image
+      #   uses: docker/build-push-action@v4
+      #   with:
+      #     context: .
+      #     file: ./Dockerfile
+      #     push: true
+      #     tags: ${{ env.HARBOR_REG_URL }}/${{ env.HARBOR_PROJECT_NAME }}/${{ env.IMAGE_NAME }}:${{ env.TIMESTAMP }}
+
+      # Build and push to GitHub Container Registry
+      - name: Build and push Docker image to GHCR
+        uses: docker/build-push-action@v4
+        with:
+          context: ./backend/
+          file: ./backend/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.TIMESTAMP }}
+            ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
