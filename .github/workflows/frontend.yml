@@ -58,3 +58,20 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.TIMESTAMP }}
             ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
+      
+      # Make the package public
+      - name: Make package public
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}      # 或 ${{ secrets.PKG_TOKEN }}（视权限而定）
+          ORG: yaencn           # 替换为你的 GitHub 组织名称
+          TYPE: container                       # npm, maven, rubygems, nuget, container
+          NAME: ${{ env.IMAGE_NAME }}                       # package 名称或镜像名
+        run: |
+          set -e
+          curl -s -o /dev/null -w "%{http_code}" \
+            -X PUT \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -d '{"visibility":"public"}' \
+            "https://api.github.com/orgs/${ORG}/packages/${TYPE}/${NAME}/visibility" \
+          || (echo "Failed to set visibility" && exit 1)
