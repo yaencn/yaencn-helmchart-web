@@ -22,17 +22,20 @@ jobs:
         run: |
           echo "TIMESTAMP=$(TZ=Asia/Shanghai date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
       
-      # 设置 Docker 标签
+      # 设置 Docker 标签（改为基于 GITHUB_REF 解析 tag）
       - name: Set Docker tags
         id: image-tag
         run: |
-          if [[ "${{ github.ref_type }}" == "tag" ]]; then
-            echo "IMAGE_TAG=${{ github.ref_name }}" >> $GITHUB_ENV
-            echo "IMAGE_TAG=${IMAGE_TAG:-${{ github.ref_name }}}"
+          echo "GITHUB_REF=${GITHUB_REF}"
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            # 从 refs/tags/<tag> 中提取 tag 名
+            TAG_NAME="${GITHUB_REF#refs/tags/}"
+            echo "IMAGE_TAG=${TAG_NAME}" >> $GITHUB_ENV
+            echo "Detected tag ref: ${TAG_NAME}"
           else
-            # 使用运行时的 shell 变量 $TIMESTAMP（来自前一步的 $GITHUB_ENV）
-            echo "IMAGE_TAG=$TIMESTAMP" >> $GITHUB_ENV
-            echo "IMAGE_TAG=$IMAGE_TAG"
+            # fallback 使用上一步写入的 TIMESTAMP
+            echo "IMAGE_TAG=${TIMESTAMP}" >> $GITHUB_ENV
+            echo "Using timestamp IMAGE_TAG=${TIMESTAMP}"
           fi
 
       # Log into GitHub Container Registry
