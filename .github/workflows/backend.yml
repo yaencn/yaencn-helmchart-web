@@ -24,6 +24,7 @@ jobs:
       
       # 设置 Docker 标签
       - name: Set Docker tags
+        id: image-tag
         run: |
           if [[ "${{ github.ref_type }}" == "tag" ]]; then
             echo "IMAGE_TAG=${{ github.ref_name }}" >> $GITHUB_ENV
