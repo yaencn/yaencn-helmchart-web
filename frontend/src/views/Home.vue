@@ -21,6 +21,7 @@
         :key="item.name"
         :name="item.name"
         :version="item.version"
+        :appVersion="item.appVersion"
         :description="item.description"
         :updated="item.updated"
         @details="openDetails(item)"
@@ -31,6 +32,7 @@
       :visible="detailsVisible"
       :name="detailItem.name || ''"
       :version="detailItem.version || ''"
+      :appVersion="detailItem.appVersion || ''"
       :description="detailItem.description || ''"
       :values="detailItem.values || ''"
       @close="detailsVisible = false"
@@ -39,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import axios from 'axios'
 import SearchBar from '@/components/SearchBar.vue'
 import ChartCard from '@/components/ChartCard.vue'
@@ -59,6 +61,7 @@ const fetchCharts = async () => {
       arr.push({
         name,
         version: v.version || '',
+        appVersion: v.appVersion || '',
         description: v.description || '',
         updated: v.created ? new Date(v.created).toLocaleDateString() : '',
         values: v.values || '',
@@ -86,5 +89,14 @@ const openDetails = (item: any) => {
   detailsVisible.value = true
 }
 
-onMounted(fetchCharts)
+// initial fetch + polling for real-time updates
+let pollId: number | undefined
+onMounted(() => {
+  fetchCharts()
+  pollId = window.setInterval(fetchCharts, 10000)
+})
+
+onUnmounted(() => {
+  if (pollId) clearInterval(pollId)
+})
 </script>

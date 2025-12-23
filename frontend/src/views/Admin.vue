@@ -13,6 +13,7 @@
       >
         <el-table :data="group.versions" style="width: 100%" v-loading="loading">
           <el-table-column prop="version" label="版本" width="120" />
+          <el-table-column prop="appVersion" label="应用版本" width="140" />
           <el-table-column prop="description" label="描述" />
           <el-table-column prop="updated" label="更新时间" width="180" />
           <el-table-column label="操作" width="150">
@@ -71,6 +72,7 @@ const fetchCharts = async () => {
       groups[name] = (versions as any[]).map((v: any) => ({
         name,
         version: v.version || '',
+        appVersion: v.appVersion || '',
         description: v.description || '',
         updated: v.created ? new Date(v.created).toLocaleString() : '',
         filename: v.urls && v.urls.length ? v.urls[0] : `${name}-${v.version}.tgz`

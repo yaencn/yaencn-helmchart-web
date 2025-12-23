@@ -8,7 +8,10 @@
           </div>
           <div>
             <h3 class="text-lg font-bold text-gray-900 leading-tight">{{ name }}</h3>
-            <span class="text-xs font-medium px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full">{{ version }}</span>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-medium px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full">{{ version }}</span>
+              <span v-if="appVersion" class="text-xs font-medium px-2 py-0.5 bg-gray-100 text-gray-700 rounded-full">应用版本：{{ appVersion }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -36,6 +39,7 @@ import { Box } from '@element-plus/icons-vue'
 const props = defineProps({
   name: { type: String, required: true },
   version: { type: String, required: true },
+  appVersion: { type: String, required: false },
   description: { type: String, required: false },
   updated: { type: String, required: false },
 })

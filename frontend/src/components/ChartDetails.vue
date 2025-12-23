@@ -2,6 +2,7 @@
   <el-dialog :model-value="visible" width="640px" @close="$emit('close')" :title="name">
     <div class="space-y-4">
       <p class="text-sm text-gray-700">版本：{{ version }}</p>
+      <p v-if="appVersion" class="text-sm text-gray-700">应用版本：{{ appVersion }}</p>
       <p class="text-sm text-gray-700">描述：{{ description }}</p>
       <div v-if="values" class="mt-4">
         <h4 class="font-medium">Values 示例</h4>
@@ -20,6 +21,7 @@ const props = defineProps({
   visible: { type: Boolean, required: true },
   name: { type: String, required: true },
   version: { type: String, required: true },
+  appVersion: { type: String, required: false },
   description: { type: String, required: false },
   values: { type: String, required: false },
 })
