@@ -22,13 +22,14 @@ jobs:
         run: |
           echo "TIMESTAMP=$(TZ=Asia/Shanghai date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
 
-      # 设置 Docker 标签
       - name: Set Docker tags
         run: |
           if [[ "${{ github.ref_type }}" == "tag" ]]; then
             echo "IMAGE_TAG=${{ github.ref_name }}" >> $GITHUB_ENV
+            echo ${{ env.IMAGE_TAG }}
           else
             echo "IMAGE_TAG=${{ env.TIMESTAMP }}" >> $GITHUB_ENV
+            echo ${{ env.IMAGE_TAG }}
           fi
 
       # Log into GitHub Container Registry
